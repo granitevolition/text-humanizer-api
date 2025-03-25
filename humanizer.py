@@ -6,7 +6,6 @@ import re
 import asyncio
 from itertools import cycle
 from collections import deque
-from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -24,10 +23,7 @@ logging.basicConfig(
         logging.StreamHandler(sys.stderr)
     ]
 )
-logger = logging.getLogger("humanizer-mcp")
-
-# Initialize the MCP server
-mcp = FastMCP("Text Humanizer")
+logger = logging.getLogger("humanizer-lib")
 
 # Read API keys from environment variables or use a single key if provided
 api_key_env_var = os.getenv("OPENAI_API_KEY")
@@ -73,15 +69,13 @@ SELECT_BEST_SENTENCE = os.getenv("SELECT_BEST_SENTENCE", "True").lower() == "tru
 default_model = os.getenv("DEFAULT_MODEL", "ft:gpt-3.5-turbo-0125:personal::9hpCfvVt")
 gpt_models = cycle([default_model])
 
-@mcp.tool()
 async def echo_text(input_text: str) -> str:
     """
-    Simply echo back the text for testing the MCP connection.
+    Simply echo back the text for testing the API connection.
     """
     logger.info(f"Echo tool called with: {input_text[:50]}...")
     return input_text
 
-@mcp.tool()
 async def humanize_text(input_text: str) -> str:
     """
     Return a humanized (more natural) version of the input text.
@@ -342,10 +336,3 @@ async def clean_text(original_text, rewritten_text):
     except Exception as e:
         logger.error(f"Error cleaning text: {str(e)}")
         return rewritten_text  # Return the uncleaned text on error
-
-# Run the server when the script is executed
-if __name__ == "__main__":
-    logger.info("Starting Text Humanizer MCP server...")
-    # The FastMCP.run() method doesn't accept host/port arguments in version 0.4.1
-    # Railway automatically sets the PORT environment variable
-    mcp.run()  # Don't pass any arguments
