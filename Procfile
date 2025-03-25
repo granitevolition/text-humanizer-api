@@ -1,1 +1,1 @@
-web: python humanizer.py
+web: python app.py
