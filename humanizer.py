@@ -346,6 +346,6 @@ async def clean_text(original_text, rewritten_text):
 # Run the server when the script is executed
 if __name__ == "__main__":
     logger.info("Starting Text Humanizer MCP server...")
-    port = int(os.getenv("PORT", "8000"))
-    host = os.getenv("HOST", "0.0.0.0")
-    mcp.run(host=host, port=port)
+    # The FastMCP.run() method doesn't accept host/port arguments in version 0.4.1
+    # Railway automatically sets the PORT environment variable
+    mcp.run()  # Don't pass any arguments
